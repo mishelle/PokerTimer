@@ -1,0 +1,160 @@
+﻿<Page
+    x:Class="PokerTimer.MainPage2"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:PokerTimer"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Charting="using:WinRTXamlToolkit.Controls.DataVisualization.Charting"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignData /SampleData/MainViewModelSampleData.xaml}"
+    >
+
+    <Page.Resources>
+        <local:MyColorConverter x:Key="MyColorConverter"></local:MyColorConverter>
+        <local:BoolToVolumeConverter x:Key="MyVolumeConverter"></local:BoolToVolumeConverter>
+        <local:BoolToPausedLabelConverter x:Key="MyPausedLabelConverter"></local:BoolToPausedLabelConverter>
+        <local:BoolToSymbolIconConverter x:Key="MySymbolIconConverter"></local:BoolToSymbolIconConverter>
+    </Page.Resources>
+    <Grid Background="Gray">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="3*"></ColumnDefinition>
+        <ColumnDefinition Width="2*"></ColumnDefinition>
+      </Grid.ColumnDefinitions>
+        
+      <!--left side: timer and pause-->
+      <Grid Grid.Column="0">
+          
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+      <!--<Charting:Chart x:Name="Pie">
+        <Charting:PieSeries DependentValuePath="Amount" 
+                        ItemsSource="{Binding Path=TimePortions}" IsSelectionEnabled="False" />
+      </Charting:Chart>
+      
+      <local:ProgressCircle x:Name="RoundProgress"></local:ProgressCircle>-->
+        <Viewbox Stretch="Uniform">
+            <TextBlock Text="{Binding Path=TimeLeft}"
+                       Foreground="{Binding Path=IsWarning, Converter={StaticResource MyColorConverter}}"
+               >
+            </TextBlock>
+        </Viewbox>
+       <!--pause button-->
+        <Viewbox Grid.Row="1" Stretch="Uniform"
+                 HorizontalAlignment="Left">
+            <Grid>
+                 <ToggleButton IsChecked="{Binding IsPaused, Mode=TwoWay}" Height="32" Margin="7,7,0,0" Width="66">
+                    <ToggleButton.Content>
+                        <TextBlock Text="{Binding Path=IsPaused, Converter={StaticResource MyPausedLabelConverter}}"
+                                   FontSize="10"
+                                   Margin="-5,0,-5,0"/>
+                    </ToggleButton.Content>
+                 </ToggleButton>
+            </Grid>
+
+
+        </Viewbox>
+       
+        </Grid>
+        
+      <!--right side: blinds-->
+        <Grid Grid.Column="1">
+          
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5*"></RowDefinition>
+            <RowDefinition Height="2*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <!--<Viewbox Grid.Row="0" 
+                 Stretch="Fill"> -->
+            <Grid Margin="0"  >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="3*"/>
+                </Grid.RowDefinitions>
+
+              <Viewbox >
+                <TextBlock Text="Current Blinds"
+                           TextAlignment="Center"
+                           Margin="0"/>
+              </Viewbox>
+
+              <Viewbox Grid.Row="1">
+                <TextBlock Text="{Binding Path=CurrentPeriod.SmallBlind}"
+                           HorizontalAlignment="Center"  VerticalAlignment="Stretch"
+                           Margin="0"
+                           />
+</Viewbox>
+
+              <Viewbox Grid.Row="2">
+                <TextBlock Text="{Binding Path=CurrentPeriod.LargeBlind}"
+                           HorizontalAlignment="Center"  VerticalAlignment="Stretch"
+                           Margin="0"
+                           /></Viewbox>
+
+            </Grid>
+        <!--</Viewbox>
+        
+        <Viewbox Grid.Row="1">-->
+            <Grid Margin="6" Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="3*"/>
+                </Grid.RowDefinitions>
+
+              <Viewbox >
+                <TextBlock Text="Up Next"
+                           HorizontalAlignment="Center"
+                           Margin="0"/>
+</Viewbox>
+
+              <Viewbox Grid.Row="1">
+              <StackPanel Orientation="Horizontal" >
+                <TextBlock Grid.Row="1"
+                           HorizontalAlignment="Center"
+                           Text="{Binding Path=NextPeriod.SmallBlind}"
+                           Margin="0,0,10,0"/>                
+
+               
+                <TextBlock Grid.Row="2"
+                           HorizontalAlignment="Center"
+                           Text="{Binding Path=NextPeriod.LargeBlind}"
+                           Margin="0"/>
+            </StackPanel>
+              
+            </Viewbox>
+
+            </Grid>
+
+        <!--</Viewbox>-->
+
+
+        
+        <MediaElement x:Name="AudioPlayer" 
+                      Volume="{Binding Path=IsWarningNotPaused, Converter={StaticResource MyVolumeConverter}}"
+                      Source="/Assets/Warning.wav"
+                      MediaEnded="AudioPlayer_MediaEnded"/>
+        </Grid>
+
+    </Grid>
+    <Page.BottomAppBar>
+        <CommandBar>
+            <!-- CommandBar content -->
+            <AppBarButton 
+                Label="{Binding Path=IsPaused, Converter={StaticResource MyPausedLabelConverter}}"
+                Icon="{Binding Path=IsPaused, Converter={StaticResource MySymbolIconConverter}}"
+                Click="PauseResume_Click"
+                >
+            </AppBarButton>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton Label="Restart Game" Icon="Refresh" Click="RestartTournament_Click"/>
+                <AppBarButton Label="Restart Round" Icon="Previous" Click="RestartRound_Click"/>
+                <AppBarButton Label="Next Round" Icon="Next" Click="NextRound_Click"/>
+                <AppBarButton Label="Settings" Icon="Setting" Click="Settings_Click"/>
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+    </Page.BottomAppBar>
+</Page>

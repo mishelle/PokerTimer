@@ -7,7 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DataContext="{d:DesignData /SampleData/MainViewModelSampleData.xaml}"
-    >
+>
+
 
     <Page.Resources>
         <local:MyColorConverter x:Key="MyColorConverter"></local:MyColorConverter>
@@ -15,21 +16,21 @@
         <local:BoolToPausedLabelConverter x:Key="MyPausedLabelConverter"></local:BoolToPausedLabelConverter>
         <local:BoolToSymbolIconConverter x:Key="MySymbolIconConverter"></local:BoolToSymbolIconConverter>
     </Page.Resources>
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="Gray">
         <Grid.RowDefinitions>
             <RowDefinition Height="3*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        
+
         <Viewbox Stretch="Uniform">
             <TextBlock Text="{Binding Path=TimeLeft}"
                        Foreground="{Binding Path=IsWarning, Converter={StaticResource MyColorConverter}}"
                >
             </TextBlock>
         </Viewbox>
-        
-        
+
+
         <Viewbox Grid.Row="1" 
                  Stretch="Uniform">
             <Grid Margin="0" >
@@ -58,7 +59,7 @@
                            Grid.Column="4"/>
             </Grid>
         </Viewbox>
-        
+
         <Viewbox Grid.Row="2">
             <Grid Margin="6">
                 <Grid.ColumnDefinitions>
@@ -88,22 +89,23 @@
 
         </Viewbox>
 
+        <!--pause button-->
         <Viewbox Grid.Row="2" Stretch="Uniform"
                  HorizontalAlignment="Right">
             <Grid>
-                 <ToggleButton IsChecked="{Binding IsPaused, Mode=TwoWay}" Height="32" Margin="7,7,0,0" Width="66">
+                <ToggleButton IsChecked="{Binding IsPaused, Mode=TwoWay}" Height="32" Margin="7,7,0,0" Width="66">
                     <ToggleButton.Content>
                         <TextBlock Text="{Binding Path=IsPaused, Converter={StaticResource MyPausedLabelConverter}}"
                                    FontSize="10"
                                    Margin="-5,0,-5,0"/>
                     </ToggleButton.Content>
-                 </ToggleButton>
+                </ToggleButton>
             </Grid>
 
 
         </Viewbox>
 
-        
+
         <MediaElement x:Name="AudioPlayer" 
                       Volume="{Binding Path=IsWarningNotPaused, Converter={StaticResource MyVolumeConverter}}"
                       Source="/Assets/Warning.wav"

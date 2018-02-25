@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,7 @@ namespace PokerTimer
         private int minutesLeft;
         private int secondsLeft;
         private int _roundIndex;
+        private double _secondsInPeriod;
 
         public MainController(Tournament tournament)
         {
@@ -48,7 +50,7 @@ namespace PokerTimer
         public void ResetPeriod()
         {
             var period = _tournament.Periods[_roundIndex];
-            SetTimeLeft(period);
+            ResetTimeLeft(period);
         }
 
         public void AdvancePeriod()
@@ -69,15 +71,29 @@ namespace PokerTimer
             var period = _tournament.Periods[_roundIndex];
             main.CurrentPeriod = GetPeriod(period);
             main.NextPeriod = GetPeriod(_tournament.Periods[nextRoundIndex]);
-            
-            SetTimeLeft(period);
+            _secondsInPeriod = period.DurationMinutes * 60.0 + period.DurationSeconds;
+
+            ResetTimeLeft(period);
         }
 
-        private void SetTimeLeft(Period period)
+        private void ResetTimeLeft(Period period)
         {
             minutesLeft = period.DurationMinutes;
             secondsLeft = period.DurationSeconds;
-            main.TimeLeft = FormatTime(minutesLeft, secondsLeft);
+            SetTimeLeft(minutesLeft, secondsLeft);
+        }
+
+        private void SetTimeLeft(int minutes, int seconds)
+        {
+            var amountLeft = minutes * 60.0 + seconds;
+            main.PercentTimePassed = (_secondsInPeriod - amountLeft) / _secondsInPeriod;
+            main.TimeLeft = FormatTime(minutes, seconds);
+
+            main.TimePortions = null;
+            main.TimePortions = new ObservableCollection<PieSliceViewModel>{
+                new PieSliceViewModel { Amount = _secondsInPeriod - amountLeft },
+                new PieSliceViewModel { Amount = amountLeft }
+            };
         }
 
         private PeriodViewModel GetPeriod(Period period)
@@ -105,12 +121,12 @@ namespace PokerTimer
             {
                 if (secondsLeft > 0)
                 {
-                    main.TimeLeft = FormatTime(minutesLeft, --secondsLeft);
+                    SetTimeLeft(minutesLeft, --secondsLeft);
                 }
                 else if (minutesLeft > 0)
                 {
                     secondsLeft = 59;
-                    main.TimeLeft = FormatTime(--minutesLeft, secondsLeft);
+                    SetTimeLeft(--minutesLeft, secondsLeft);
                 }
                 else if (_roundIndex == _tournament.Periods.Count)
                 {
